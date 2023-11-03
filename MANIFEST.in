@@ -1,0 +1,2 @@
+# recursive-include src/pytradecn/utils/Tesseract *.*
+# include src/pytradecn/usermanual.pdf
