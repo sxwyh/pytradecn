@@ -21,6 +21,7 @@
 #
 # 修改日志：
 #   2023-04-12  第一次编写
+#   2023-11-16  添加等待保存完成
 #
 
 from os import remove
@@ -63,6 +64,10 @@ def image_to_text(im=None, out='stdout', psm='3', **kwargs):
     with NamedTemporaryFile(prefix='WYH_', suffix='.png', delete=False) as f:
         # 将图像放大一倍，转换为灰度
         im.resize((w * 2, h * 2)).convert('L').save(f, format='png')
+
+    # 等待保存完成
+    while not exists(f.name):  # 等待保存完成
+        pass
 
     # 将代码放在with外面，因为python和tesseract不能同时打开文件
     text = file_to_text(file=f.name, out=out, psm=psm, **kwargs)
