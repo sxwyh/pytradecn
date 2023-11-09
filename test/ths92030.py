@@ -14,6 +14,9 @@
 # 损失、数据安全损失、账户资产损失或其他任何责任事故，开源软件提供者或插件提供者均不承担任何责任。请不要将该软件应用于商
 # 业活动，否则由于把该软件应用于商业活动所造成的一切损失或法律责任，开源软件提供者或插件提供者均不承担任何责任。
 #
+# 注意：同花顺客户端集成在行情软件中，如果独立启动pywinauto会弹出下面的警告，不要紧，pytradecn也能完成等待
+# warnings.warn('Application is not loaded correctly (WaitForInputIdle failed)', RuntimeWarning)
+#
 # 修改日志：
 #   2022-10-20  第一次编写
 #
