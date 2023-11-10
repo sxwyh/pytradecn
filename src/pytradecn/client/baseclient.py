@@ -60,9 +60,9 @@ class BaseClientMeta(type):
             else:
                 raise ClientConfigError(f'客户端{cls}缺少关键配置<loginwindow>')
 
-            if 'tradewindow' in attrs:
+            if 'mainwindow' in attrs:
                 # 主窗口设计成列表是为了兼容集成在行情软件中的交易客户端，例如通达信
-                criterias_ = attrs['tradewindow']
+                criterias_ = attrs['mainwindow']
                 if isinstance(criterias_, dict):
                     criterias_ = [criterias_, ]
                 criterias = [crit.copy() for crit in criterias_]
@@ -73,12 +73,12 @@ class BaseClientMeta(type):
                 # 最后一个元素是真正的窗口，必须有control_count属性
                 control_count = criterias[-1].pop('control_count', 4)
                 # 构造真正的WindowSpecification对象
-                cls.tradewindow = WindowSpecification(criterias[0])
-                cls.tradewindow.criteria.extend(criterias[1:])
+                cls.mainwindow = WindowSpecification(criterias[0])
+                cls.mainwindow.criteria.extend(criterias[1:])
                 # 添加自定义child_count属性，以识别弹窗
-                cls.tradewindow.child_count = control_count
+                cls.mainwindow.child_count = control_count
             else:
-                raise ClientConfigError(f'客户端{cls}缺少关键配置<tradewindow>')
+                raise ClientConfigError(f'客户端{cls}缺少关键配置<mainwindow>')
 
             # 最正确的做法是：cls.prompt = PromptManager(cls)，但会造成import冲突，所以在其元类中实现单例
             cls.prompt = None
@@ -123,9 +123,9 @@ class BaseClient(metaclass=BaseClientMeta):
     name = None
     key = None  # 客户端设别符，重要关键参数，一定保持唯一
 
-    # 客户端登录窗口和交易窗口规范，重要参数，在具体的客户端设置
+    # 客户端登录窗口和主窗口规范，重要参数，在具体的客户端设置
     # loginwindow = dict()
-    # tradewindow = dict()
+    # mainwindow = dict()
 
     # 交易模板名，默认DEFAULT模板无法满足功能要求时，应自定义模板
     tradetemplate = 'DEFAULT'
@@ -267,7 +267,7 @@ class BaseClient(metaclass=BaseClientMeta):
         # 始终返回正确的主窗口，不要使用Application.top_window(),Application.active()来设置主窗口
         # 设置timeout=0，因应用场景非此即彼，并非捕捉模式，以此加快运行速度
         # 不用改变存在的判断顺序
-        return cls.tradewindow if cls.tradewindow.exists(timeout=0) else cls.loginwindow
+        return cls.mainwindow if cls.mainwindow.exists(timeout=0) else cls.loginwindow
 
     @classmethod
     def root_window(cls):

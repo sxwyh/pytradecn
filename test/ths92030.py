@@ -89,7 +89,7 @@ class THS92030(BaseClient):
     name = '同花顺'
     key = 'ths92030'  # 客户端设别符，重要关键参数，一定保持唯一
 
-    # 客户端登录窗口和交易窗口规范,只要能区别即可，没必要都填写（除control_count外），使用inspect.exe查看，参数如下：
+    # 客户端登录窗口和交易主窗口规范,只要能区别即可，没必要都填写（除control_count外），使用inspect.exe查看，参数如下：
     # title：            有这个标题的窗口，inspect.exe下的name属性
     # title_re：         标题与此正则表达式匹配的窗口
     # class_name：       具有此窗口类的窗口
@@ -98,7 +98,7 @@ class THS92030(BaseClient):
     # auto_id：          具有此自动化ID的窗口
     # control_count:     该窗口在无任何弹窗时的子项数，*必填项*
     loginwindow = dict(title='', control_type='Pane', control_count=16)
-    tradewindow = dict(title='网上股票交易系统5.0', control_type='Window', control_count=4)
+    mainwindow = dict(title='网上股票交易系统5.0', control_type='Window', control_count=4)
 
     # 交易模板名,默认DEFAULT模板无法满足功能要求时，应自定义模板
     tradetemplate = 'THS_9_20_30'

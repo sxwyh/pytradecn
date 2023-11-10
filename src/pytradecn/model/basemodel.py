@@ -54,7 +54,7 @@ class BaseModel(metaclass=BaseModelMeta):
         return object.__new__(BaseModelMeta.models[client.trademodel])
 
     def __init__(self, client):
-        self.__element = client.tradewindow.element_info  # 加快运行速度
+        self.__element = client.mainwindow.element_info  # 加快运行速度
         self._client = client
         self._prompt = PromptManager(client)
 

@@ -36,7 +36,7 @@ class YH(BaseClient):
     name = '银河双子星'
     key = 'yh'
 
-    # 客户端登录窗口和交易窗口规范,只要能区别即可，没必要都填写（除control_count外），使用inspect.exe查看，参数如下：
+    # 客户端登录窗口和主窗口规范,只要能区别即可，没必要都填写（除control_count外），使用inspect.exe查看，参数如下：
     # title：            有这个标题的窗口，inspect.exe下的name属性
     # title_re：         标题与此正则表达式匹配的窗口
     # class_name：       具有此窗口类的窗口
@@ -45,7 +45,7 @@ class YH(BaseClient):
     # auto_id：          具有此自动化ID的窗口
     # control_count:     该窗口在无任何弹窗时的子项数，*必填项*
     loginwindow = dict(title='用户登录', control_count=20)
-    tradewindow = dict(title='网上股票交易系统5.0', control_count=4)
+    mainwindow = dict(title='网上股票交易系统5.0', control_count=4)
 
     # 登录引擎名
     loginengine = 'VERIFYCODEPLUS'

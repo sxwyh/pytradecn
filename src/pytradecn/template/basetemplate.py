@@ -90,7 +90,7 @@ class BaseTemplate(metaclass=BaseTemplateMeta):
         if self._client.window() is self._client.loginwindow:
             # 用户未登录
             BaseEngine(self._client).login()
-            self._client.tradewindow.wait('ready', timeout=15)  # 等待交易主窗口准备好
+            self._client.mainwindow.wait('ready', timeout=15)  # 等待交易主窗口准备好
             self._prompt.start_monitor(delay=5)  # 关闭自动弹出的提示框
             BaseModel.model_object.pop(self._client.key, None)  # 建立新对象
             self._model = BaseModel(self._client)
