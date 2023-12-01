@@ -16,7 +16,18 @@
 #
 # 修改日志：
 #   2023-10-13  第一次编写
+#   2023-11-29  添加登录函数
 #
+"""
+ 使用方法：
+
+ from pytradecn import email
+
+ email.login(server='smtp.qq.com', user='41715399@qq.com', password='您的密码')
+ mail = email.Mail(subject='这是一封邮件')
+ mail.content(text='邮件内容').send(receivers='41715399@qq.com', sender='我是发送者')
+
+"""
 
 from os.path import basename
 
@@ -28,12 +39,18 @@ from email.header import Header
 from email.utils import formataddr
 
 
-server = 'smtp.qq.com'
-user = '41715399@qq.com'
-password = '您的密码'
+def login(server, user, password):
+
+    Mail.SERVER = server
+    Mail.USER = user
+    Mail.PASSWORD = password
 
 
-class Email:
+class Mail:
+
+    SERVER = 'smtp.qq.com'
+    USER = '41715399@qq.com'
+    PASSWORD = '您的密码'
 
     def __init__(self, subject='未设置主题'):
         self.__subject = subject
@@ -83,12 +100,13 @@ class Email:
         if text != '':
             self.__mail.attach(MIMEText(text, 'html', 'utf-8'))
 
-    def send(self, receivers, sender=user):
+        return self
+
+    def send(self, receivers, sender=None):
         """发送邮件
-        receivers: 邮件接收者，必填项，其值可以为单个字符串地址、字符串地址列表、名称和字符串组成的元组、元组列表、或他们的混合列表
+        receivers: 邮件接收者，必填项，其值可以为单个字符串地址、字符串地址列表
                receivers = '12345@qq.com'  # 字符串表示的邮件地址
                receivers = ['12345@qq.com', '67890@qq.com']  # 字符串邮件地址列表
-               receivers = ('12345@qq.com', '67890@qq.com')  # 字符串邮件地址列表
         sender: 邮件发送者，默认为 41715399@qq.com，其值可以为名称字符串、或名称和地址组成的二元组
                sender = '张三'  # 字符串，发送者的机构或名称
                sender = ('张三', '12345@qq.com')  # 发送者名称（机构）和地址组成的二元组
@@ -96,8 +114,11 @@ class Email:
         if isinstance(receivers, str):
             receivers = [receivers, ]
 
+        if sender is None:
+            sender = Mail.USER
+
         if isinstance(sender, str):
-            sender = (sender, user)
+            sender = (sender, Mail.USER)
 
         # 邮件头
         # self.__mail['From'] = formataddr((Header(sender[0], 'utf-8').encode(), sender[1]))
@@ -107,10 +128,10 @@ class Email:
 
         # 发送邮件
         try:
-            smtp = SMTP_SSL(server)
+            smtp = SMTP_SSL(Mail.SERVER)
             # 我们用set_debuglevel(1)就可以打印出和SMTP服务器交互的所有信息。
             # smtp.set_debuglevel(1)
-            smtp.login(user, password)
+            smtp.login(Mail.USER, Mail.PASSWORD)
             smtp.sendmail(sender[1], receivers, self.__mail.as_string())
             smtp.quit()
         except SMTPException:
