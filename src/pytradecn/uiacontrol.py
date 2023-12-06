@@ -179,7 +179,7 @@ class UIAControlSpecification(object):
                 )
         except TimeoutError:
             # raise e.original_exception  # 发生的原始异常
-            raise ClientConfigError('找不到控件，可能客户端配置错误:{0}'.format(self.__criteria['control_define']))
+            raise ClientConfigError('找不到控件或存在多个控件：{0}'.format(self.__criteria['control_define']))
 
     def wrapper_object(self):
         return self.__resolve_control()
