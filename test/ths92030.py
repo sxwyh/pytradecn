@@ -108,7 +108,7 @@ class THS92030(BaseClient):
     trademodel = 'THS_9_20_30'
 
     # 设置交易的速度模式，注意：会影响同时操作的所有客户端
-    TRADE_SPEED_MODE = 'fast'  # defaults(默认速度)、slow（慢速）、fast（快速）
+    TRADE_SPEED_MODE = 'fast'  # turbo（极速）、fast（快速）、defaults(默认)、slow（慢速）、dull（极慢）
     # 提示框弹出框相关
     PROMPT_TITLE_ID = '1365'
     PROMPT_CONTENT_ID = '1004'
@@ -154,6 +154,7 @@ class THS92030(BaseClient):
     # 产品菜单
     PRODUCT_MENU_ID = {
         'control': '1001|Pane|Tabpane',
+        'class_name': 'CCustomTabCtrl',
         'tabs': [
             {'name': '股票交易', 'rect': (1, 2, 72, 20), 'link': '129|Tree'},
             {'name': '开放式基金(场外)', 'rect': (73, 2, 174, 20), 'link': '240|Tree'},
@@ -487,9 +488,16 @@ class THSGridWrapper(BaseUIAWrapper):
                 )
                 # 由于点击确认后，验证码提示框并不会主动关闭，故判断“另存为”对话框是否弹出作为验证码是否正确的判断依据
                 pane.ok()
+            else:
+                # 关闭验证码提示框
+                pane.cancel()
 
+        savetofile = saveto.child(self.config('savetofile'))
+        # 将鼠标移动到输入框，否则微软UIA的接口会找不到主窗口，不知何故
+        savetofile.click_input()
         # 这里感觉“卡”一下，是因为虽然“另存为”对话框已弹出，但弹窗的“等待关闭”机制仍在等待验证码提示框关闭，但验证码提示框不关闭
-        saveto.child(self.config('savetofile')).set_text(file)
+        savetofile.set_text(file)
+        # 保存
         saveto.ok()
 
     def __save_csv_and_parse(self):

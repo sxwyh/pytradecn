@@ -136,7 +136,7 @@ class BaseClient(metaclass=BaseClientMeta):
 
     # 全局设置或控件参数
     # 设置交易的速度模式，注意：会影响同时操作的所有客户端
-    TRADE_SPEED_MODE = 'fast'  # defaults(默认速度)、slow（慢速）、fast（快速）
+    TRADE_SPEED_MODE = 'fast'  # turbo（极速）、fast（快速）、defaults(默认)、slow（慢速）、dull（极慢）
     # 提示框弹出框相关
     PROMPT_TYPE_LIST = ('Pane', 'Window', 'Custom')
     PROMPT_TITLE_ID = '1365'
@@ -183,6 +183,7 @@ class BaseClient(metaclass=BaseClientMeta):
     # 产品菜单
     PRODUCT_MENU_ID = {
         'control': '1001|Pane|Tabpane',
+        'class_name': 'CCustomTabCtrl',
         'tabs': [
             {'name': '股票交易', 'rect': (1, 2, 64, 19), 'link': '129|Tree'},
             {'name': '开放式基金(场外)', 'rect': (65, 2, 176, 19), 'link': '240|Tree'},

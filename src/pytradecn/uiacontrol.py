@@ -153,7 +153,7 @@ class UIAControlSpecification(object):
             raise ElementNotFoundError('找不到控件:{0}'.format(self.__criteria['control_define']))
 
         if len(elements) > 1:
-            exception = ElementAmbiguousError('有{0}个控件，在此条件下{1}'.format(
+            exception = ElementAmbiguousError('找到{0}个控件，在此条件下:{1}'.format(
                 len(elements),
                 str(self.__criteria['control_define']),
             ))
@@ -177,9 +177,8 @@ class UIAControlSpecification(object):
                 self.__get_ctrl,
                 (ElementNotFoundError, ElementAmbiguousError, MatchError, InvalidWindowHandle, InvalidElement)
                 )
-        except TimeoutError:
-            # raise e.original_exception  # 发生的原始异常
-            raise ClientConfigError('找不到控件或存在多个控件：{0}'.format(self.__criteria['control_define']))
+        except TimeoutError as err:
+            raise ClientConfigError(str(err.original_exception))
 
     def wrapper_object(self):
         return self.__resolve_control()

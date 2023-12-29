@@ -181,7 +181,11 @@ class GridWrapper(BaseUIAWrapper):
         self.set_focus().type_keys('^s')
 
         saveto = self._get_control(self.config('saveto'))
-        saveto.child(self.config('savetofile')).set_text(file)
+        # saveto.child(self.config('savetofile')).set_text(file)
+        savetofile = saveto.child(self.config('savetofile'))
+        # 将鼠标移动到输入框，否则微软UIA的接口会找不到主窗口，不知何故
+        savetofile.click_input()
+        savetofile.set_text(file)
         saveto.ok()
 
     def __save_csv_and_parse(self):

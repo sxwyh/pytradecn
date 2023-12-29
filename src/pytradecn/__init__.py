@@ -22,11 +22,17 @@
 # * 由于采用“客户端驱动型工厂模式”，所以项目可扩展性高、可根据不同的券商版本制作不同的交易模型也可以制作不同的部件适应不同的
 #   场景，如制作不同的登录引擎以适应不同的登录方式。
 #
+#
+# 修改日志：
+#   0.0.1   第一次编写
+#   0.0.2   主窗口修改成mainwindow
+#   0.0.3   email.py 中添加login模块级方法
+#           添加极速模式
 
 import sys
 from .utils import ocr
 
-__version__ = '0.0.1'
+__version__ = '0.0.3'
 
 # 环境检测
 assert sys.platform.startswith('win'), 'pytradecn只能运行在Windows操作系统'

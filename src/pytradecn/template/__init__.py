@@ -27,4 +27,94 @@
 #   场景，如制作不同的登录引擎以适应不同的登录方式。
 #
 
+from pywinauto.timings import TimeConfig
+
 from . import templatesa, templatesb  # 注册模板
+
+
+def turbo(self):
+    """为计时器添加极速模式"""
+    for setting in self._timings:
+        # set timeouts to the min of the current speed or 1 second
+        if setting.endswith("_timeout") and setting not in (
+                'app_start_timeout', 'app_connect_timeout', 'cpu_usage_wait_timeout'
+        ):
+            self._timings[setting] = min(0.8, self._timings[setting])
+
+        if setting.endswith("_wait"):
+            self._timings[setting] = self._timings[setting] / 5
+
+        elif setting.endswith("_retry"):  # 不要调整cpu_usage_interval
+            self._timings[setting] = 0  # 0.001
+
+
+TimeConfig.turbo = turbo
+
+
+def fast(self):
+    # 重写快速模式
+    for setting in self._timings:
+        # set timeouts to the min of the current speed or 1 second
+        if setting.endswith("_timeout") and setting not in (
+                'app_start_timeout', 'app_connect_timeout', 'cpu_usage_wait_timeout'
+        ):
+            self._timings[setting] = min(1, self._timings[setting])
+
+        if setting.endswith("_wait"):
+            self._timings[setting] = self._timings[setting] / 2
+
+        elif setting.endswith("_retry"):  # 不要调整cpu_usage_interval
+            self._timings[setting] = 0.001
+
+
+TimeConfig.fast = fast
+
+
+def slow(self):
+    # 重写慢速模式
+    for setting in self._TimeConfig__default_timing:
+        if setting.endswith("_timeout"):
+            self._timings[setting] = max(
+                self._TimeConfig__default_timing[setting] * 6,
+                self._timings[setting])
+
+        if setting.endswith("_wait"):
+            self._timings[setting] = max(
+                self._TimeConfig__default_timing[setting] * 3,
+                self._timings[setting])
+
+        elif setting.endswith("_retry"):
+            self._timings[setting] = max(
+                self._TimeConfig__default_timing[setting] * 3,
+                self._timings[setting])
+
+        if self._timings[setting] < .2:
+            self._timings[setting] = .2
+
+
+TimeConfig.slow = slow
+
+
+def dull(self):
+    # 添加极慢速模式
+    for setting in self._TimeConfig__default_timing:
+        if setting.endswith("_timeout"):
+            self._timings[setting] = max(
+                self._TimeConfig__default_timing[setting] * 10,
+                self._timings[setting])
+
+        if setting.endswith("_wait"):
+            self._timings[setting] = max(
+                self._TimeConfig__default_timing[setting] * 5,
+                self._timings[setting])
+
+        elif setting.endswith("_retry"):
+            self._timings[setting] = max(
+                self._TimeConfig__default_timing[setting] * 5,
+                self._timings[setting])
+
+        if self._timings[setting] < .2:
+            self._timings[setting] = .2
+
+
+TimeConfig.dull = dull
