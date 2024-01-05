@@ -60,7 +60,8 @@ def find_elements(class_name=None,
     elements = parent.descendants(class_name=class_name,
                                   control_type=control_type,
                                   cache_enable=True,
-                                  depth=depth)
+                                  depth=depth
+                                  )
 
     # 按顺序过滤，最大可能减少循环次数
     if ctrl_index is not None:
@@ -93,8 +94,8 @@ def find_elements(class_name=None,
 
         elements = [elem for elem in elements if _title_match(elem)]
 
-    if class_name is not None and elements:
-        elements = [elem for elem in elements if elem.class_name == class_name]
+    # if class_name is not None and elements:
+    #     elements = [elem for elem in elements if elem.class_name == class_name]
 
     if class_name_re is not None and elements:
         class_name_regex = re.compile(class_name_re)

@@ -27,7 +27,7 @@
 #   0.0.1   第一次编写
 #   0.0.2   主窗口修改成mainwindow
 #   0.0.3   email.py 中添加login模块级方法
-#           添加极速模式
+#           添加极速极慢速模式
 
 import sys
 from .utils import ocr
@@ -38,7 +38,7 @@ __version__ = '0.0.3'
 assert sys.platform.startswith('win'), 'pytradecn只能运行在Windows操作系统'
 assert sys.version_info > (3, 9, 0), 'pytradecn只能运行在python3.9.0以上版本'
 
-assert ocr.exists(ocr.path), '缺少tesseract.exe，安装并拷贝Tesseract文件夹到pytradecn.utils包内或修改ocr.path.' \
+assert ocr.exists(ocr.path), '缺少tesseract.exe，下载并拷贝Tesseract文件夹到pytradecn.utils包内或修改ocr.path.' \
                              '官方网址：https://github.com/tesseract-ocr/tesseract'
 
 try:
