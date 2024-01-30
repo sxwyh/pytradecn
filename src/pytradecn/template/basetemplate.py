@@ -15,14 +15,16 @@
 # 业活动，否则由于把该软件应用于商业活动所造成的一切损失或法律责任，开源软件提供者或插件提供者均不承担任何责任。
 #
 # 修改日志：
-#   2022-08-20  第一次编写
+#   2023-08-20  第一次编写
+#   2024-01-25  0.0.4版本都改成由__getattribute__实现，去掉编写模板的步骤
 #
 """
     模板就象是汽车的总装车间，模板基类用来完成交易模板的基础行为，模板只用来定义功能而不实现功能，功能的实现应有交易模型（model）完成。
+    0.0.4版本后只保留基础模板，功能的定义和实现均在模型中完成
 """
 
-from abc import ABCMeta, abstractmethod
-from functools import wraps
+# from abc import ABCMeta, abstractmethod
+# from functools import wraps
 
 from pywinauto.timings import Timings
 from pywinauto.application import AppStartError
@@ -35,23 +37,23 @@ from ..logger import logger
 from ..error import ClientConfigError, TimeoutError
 
 
-class BaseTemplateMeta(ABCMeta):
+class BaseTemplateMeta(type):
     """交易模板元类"""
 
-    templates = {}
+    # templates = {}
 
     def __init__(cls, name, bases, attrs):
 
         super(BaseTemplateMeta, cls).__init__(name, bases, attrs)
 
-        if name != 'BaseTemplate':
-            BaseTemplateMeta.templates[attrs['name']] = cls
+        # if name != 'BaseTemplate':
+        #     BaseTemplateMeta.templates[attrs['name']] = cls
 
     def __call__(cls, client=None, user=None, psw=None, second=None, **account):
-        client = BaseClientMeta.clients[-1] if client is None else client
-        client.user = user if user is not None else client.user
-        client.psw = psw if psw is not None else client.psw
-        client.second = second if second is not None else client.second
+        client = client or BaseClientMeta.clients[-1]  # if client is None else client
+        client.user = user or client.user  # if user is not None else client.user
+        client.psw = psw or client.psw  # if psw is not None else client.psw
+        client.second = second or client.second  # if second is not None else client.second
         client.account.update(account)
         return super(BaseTemplateMeta, cls).__call__(client)
 
@@ -64,10 +66,10 @@ class BaseTemplate(metaclass=BaseTemplateMeta):
 
     """
 
-    name = ''  # 交易模板的名称
+    # name = ''  # 交易模板的名称
 
-    def __new__(cls, client):
-        return object.__new__(BaseTemplateMeta.templates[client.tradetemplate])
+    # def __new__(cls, client):
+    #     return object.__new__(BaseTemplateMeta.templates[client.tradetemplate])
 
     def __init__(self, client):
         self._client = client
@@ -81,6 +83,20 @@ class BaseTemplate(metaclass=BaseTemplateMeta):
         # if exc_type is not None:
         #    logger.error(''.join(traceback.format_exception(exc_type, exc_val, exc_tb)))
         self.close()
+
+    def __getattribute__(self, item):
+        return object.__getattribute__(self, item)
+
+    def __getattr__(self, item):
+        def wrapper(*args, **kwargs):
+            try:
+                self.__connect()
+                return True, getattr(self._model, item)(*args, **kwargs)
+            except Exception as err:
+                logger.exception(str(err))
+                return False, str(err)
+
+        return wrapper
 
     def close(self):
         self._prompt.stop_monitor()
@@ -133,32 +149,21 @@ class BaseTemplate(metaclass=BaseTemplateMeta):
         self.__login()
 
     @staticmethod
-    def connect(func):
-        @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            try:
-                self.__connect()
-                return True, func(self, *args, **kwargs)
-            except Exception as err:
-                logger.exception(str(err))
-                return False, str(err)
-        return wrapper
+    def connect(func):  # 保留以兼容0.0.4版本以前的插件
+        pass
 
-    @abstractmethod
-    def buy(self, code='', price=None, count=None, **kwargs):
-        raise NotImplementedError()
-
-    @abstractmethod
-    def sell(self, code='', price=None, count=None, **kwargs):
-        raise NotImplementedError()
-
-    @abstractmethod
-    def cancel(self, **kwargs):
-        raise NotImplementedError()
-
-    @abstractmethod
-    def query(self, target, **kwargs):
-        raise NotImplementedError()
+    # @staticmethod
+    # def connect(func):
+    #     @wraps(func)
+    #     def wrapper(self, *args, **kwargs):
+    #         try:
+    #             self.__connect()
+    #             return True, func(self, *args, **kwargs)
+    #         except Exception as err:
+    #             logger.exception(str(err))
+    #             return False, str(err)
+    #     return wrapper
+    #
 
 
 Template = BaseTemplate

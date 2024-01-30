@@ -156,7 +156,7 @@ class BaseClient(metaclass=BaseClientMeta):
     # 登录相关控件
     LOGIN_USER_ID = '1001|Edit|Editor'
     LOGIN_PASSWORD_ID = '1012|Edit|Editor'
-    LOGIN_SECOND_ID = '1012|Edit|Editor'
+    LOGIN_SECOND_ID = '1181|Edit|Editor'
     LOGIN_VERIFYCODE_ID = '1003|Edit|Editor'
     # 验证码图像，格式固定字典 (验证码ID，验证码显示在原图像的位置box（left, upper, right, lower），白名单whitelist，刷新按钮refresh)
     # 默认值，box=None,大小为原图像；whitelist=None，白名单为空；refresh=None刷新按钮为验证码图像本身
@@ -171,7 +171,7 @@ class BaseClient(metaclass=BaseClientMeta):
     # 登录的最大试错次数
     LOGIN_MAX_TIMES = 5
     # 每次登录的间隔时间（秒），此参数也用来判断登录是否成功，电脑性能差运行速度慢时，将此参数调高
-    LOGIN_MAX_WAIT = 6
+    LOGIN_MAX_WAIT = 7
 
     # 交易模型DEFAULT所需要的设置参数和控件规范
     # 锁屏密码框的文本，长时间不用会被锁屏
@@ -268,7 +268,8 @@ class BaseClient(metaclass=BaseClientMeta):
         # 始终返回正确的主窗口，不要使用Application.top_window(),Application.active()来设置主窗口
         # 设置timeout=0，因应用场景非此即彼，并非捕捉模式，以此加快运行速度
         # 不用改变存在的判断顺序
-        return cls.mainwindow if cls.mainwindow.exists(timeout=0) else cls.loginwindow
+        # return cls.mainwindow if cls.mainwindow.exists(timeout=0) else cls.loginwindow
+        return cls.loginwindow if cls.loginwindow.exists(timeout=0) else cls.mainwindow
 
     @classmethod
     def root_window(cls):

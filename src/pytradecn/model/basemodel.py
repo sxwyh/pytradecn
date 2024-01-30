@@ -72,25 +72,5 @@ class BaseModel(metaclass=BaseModelMeta):
         """复位交易窗口的功能"""
         raise NotImplementedError()
 
-    @abstractmethod
-    def buy(self, code='', price=None, count=None, **kwargs):
-        """执行买入操作"""
-        raise NotImplementedError()
-
-    @abstractmethod
-    def sell(self, code='', price=None, count=None, **kwargs):
-        """执行卖出操作"""
-        raise NotImplementedError()
-
-    @abstractmethod
-    def cancel(self, **kwargs):
-        """执行撤单操作"""
-        raise NotImplementedError()
-
-    @abstractmethod
-    def query(self, target, **kwargs):
-        """执行查询操作"""
-        raise NotImplementedError()
-
 
 Model = BaseModel

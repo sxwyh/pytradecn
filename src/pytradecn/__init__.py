@@ -28,11 +28,12 @@
 #   0.0.2   主窗口修改成mainwindow
 #   0.0.3   email.py 中添加login模块级方法
 #           添加极速极慢速模式
+#   0.0.4   去掉模板选择功能，功能的定义和实现均在模型中完成
 
 import sys
 from .utils import ocr
 
-__version__ = '0.0.3'
+__version__ = '0.0.4'
 
 # 环境检测
 assert sys.platform.startswith('win'), 'pytradecn只能运行在Windows操作系统'
@@ -50,5 +51,8 @@ except (ImportError, ModuleNotFoundError):
 try:
     from PIL import Image
     from .template.basetemplate import BaseTemplate as Trader
+    from .client.baseclient import BaseClient, Client
+    from .engine.baseengine import BaseEngine, Engine
+    from .model.basemodel import BaseModel, Model
 except (ImportError, ModuleNotFoundError):
     assert False, '缺少pillow库，使用命令行安装：pip install pillow'

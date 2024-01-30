@@ -117,7 +117,7 @@ def find_elements(class_name=None,
 
     # 设置自定义参数
     for ele in elements:
-        ele.control_key = control_key if control_key is not None else ele.control_type
+        ele.control_key = control_key or ele.control_type  # control_key if control_key isnot None else ele.control_type
         ele.control_define = control_define
         ele.top_parent = top_parent
         ele.current_parent = parent

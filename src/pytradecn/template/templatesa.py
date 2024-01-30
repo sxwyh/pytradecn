@@ -21,6 +21,7 @@
     模板用来定义功能，但不实现功能。功能的实现应该由模型（model）来完成。有4个功能必须完成定义，因为这4个功能在模板基类中被定义
     这4个功能分别是buy（买入）、sell（卖出）、cancel（撤单）、query（查询）。任何定义的功能都必须添加@BaseTemplate.connect
     修饰器才能正常工作。
+    注意：0.0.4版本后不再需要交易模板
 """
 
 from .basetemplate import BaseTemplate

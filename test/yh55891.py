@@ -1,9 +1,9 @@
 #
-# 同花顺客户端自动化实现插件
+# 银河双子星客户端（同花顺提供的版本）自动化实现插件
 # Copyright (C) 2023 谁的谁（41715399@qq.com） All rights reserved.
 #
-# 插件功能：实现同花顺客户端的登录、交易
-# 建立日期：2023.10.20
+# 插件功能：实现银河双子星客户端的登录、交易
+# 建立日期：2024.01.29
 # 适配版本：pytradecn-0.0.4及以上
 # 联系方式：谁的谁（41715399@qq.com）
 #
@@ -15,12 +15,8 @@
 # 损失、数据安全损失、账户资产损失或其他任何责任事故，开源软件提供者或插件提供者均不承担任何责任。请不要将该软件应用于商
 # 业活动，否则由于把该软件应用于商业活动所造成的一切损失或法律责任，开源软件提供者或插件提供者均不承担任何责任。
 #
-# 注意：同花顺客户端集成在行情软件中，如果独立启动pywinauto会弹出下面的警告，不要紧，pytradecn也能完成等待
-# warnings.warn('Application is not loaded correctly (WaitForInputIdle failed)', RuntimeWarning)
-#
 # 修改日志：
-#   2023-10-20  第一次编写
-#   2024-01-29  修改为pytradecn-0.0.4格式
+#   2024-01-29  第一次编写
 #
 #
 """
@@ -30,27 +26,27 @@
 
  # 导入pytradecn和本插件，导入顺序不分先后
  from pytradecn import Trader
- from mypacket.ths92030 import THS92030
+ from mypacket.ths92030 import YH55891
 
- trader = Trader(client=THS92030)
+ trader = Trader(client=YH55891)
  print(trader.query('当日委托')[1])
 
  事实上，Trader方法不需要显式输入参数，pytradecn可以自动识别您定义的客户端，如下方法：
  # 导入pytradecn和本插件，导入顺序不分先后
  from pytradecn import Trader
- from mypacket.ths92030 import THS92030
+ from mypacket.ths92030 import YH55891
 
- trader = Trader()  # pytradecn会自动识别您的客户端THS92030
+ trader = Trader()  # pytradecn会自动识别您的客户端YH55891
  print(trader.query('当日委托')[1])
 
  或者，彻底隐藏客户端的导入，如把导入客户端放在包mypacket的__init__.py中，如下：
  # 在 mypacket.__init__.py 中
- from . import ths92030
+ from . import yh55891
 
  在您的主代码中：
  from pytradecn import Trader
 
- trader = Trader()  # pytradecn会自动识别您的客户端THS92030
+ trader = Trader()  # pytradecn会自动识别您的客户端YH55891
  print(trader.query('当日委托')[1])
 """
 
@@ -63,8 +59,8 @@ from pytradecn.error import StockCodeError, StockPriceError, StockCountError, Tr
 from pytradecn.error import LoginError, TimeoutError
 
 
-class THS92030(BaseClient):
-    """同花顺客户端9.20.30，由于其内嵌在同花顺行情软件中，最好手动启动并登录同花顺行情软件并从行情软件打开客户端"""
+class YH55891(BaseClient):
+    """银河双子星客户端5.58.91，"""
 
     # 以下为固定参数，不跟随交易模板、登录引擎、交易模型的改变而不同
     # 账号信息
@@ -74,12 +70,12 @@ class THS92030(BaseClient):
     account = {}  # 账户中的其他自定义信息
 
     # 客户端安装位置，大小写敏感，且盘符为大写，如：D:\weituo\银河证券\xiadan.exe
-    path = r'D:\Users\Administrator\xiadan.exe'
+    path = r'D:\Program Files\weituo\银河证券\xiadan.exe'
 
     # 客户端信息
-    version = '9.20.30'
-    name = '同花顺'
-    key = 'ths92030'  # 客户端设别符，重要关键参数，一定保持唯一
+    version = '5.58.91_0.1'
+    name = '银河双子星'
+    key = 'yh55891'  # 客户端设别符，重要关键参数，一定保持唯一
 
     # 客户端登录窗口和交易主窗口规范,只要能区别即可，没必要都填写（除control_count外），使用inspect.exe查看，参数如下：
     # title：            有这个标题的窗口，inspect.exe下的name属性
@@ -89,13 +85,13 @@ class THS92030(BaseClient):
     # control_type：     具有此控件类型的窗口
     # auto_id：          具有此自动化ID的窗口
     # control_count:     该窗口在无任何弹窗时的子项数，*必填项*
-    loginwindow = dict(title='', control_type='Pane', control_count=16)
-    mainwindow = dict(title='网上股票交易系统5.0', control_type='Window', control_count=4)
+    loginwindow = dict(title='用户登录', control_count=20)
+    mainwindow = dict(title='网上股票交易系统5.0', control_count=4)
 
     # 登录引擎名，默认DEFAULT VERIFYCODE VERIFYCODEPLUS三种登录引擎无法满足要求时，应自定义登录引擎
-    loginengine = 'THS_9_20_30'
+    loginengine = 'YH_5_58_91'
     # 交易模型名，默认DEFAULT模型无法满足功能要求时，应自定义模型
-    trademodel = 'THS_9_20_30'
+    trademodel = 'YH_5_58_91'
 
     # 设置交易的速度模式，注意：会影响同时操作的所有客户端
     TRADE_SPEED_MODE = 'fast'  # turbo（极速）、fast（快速）、defaults(默认)、slow（慢速）、dull（极慢）
@@ -119,39 +115,33 @@ class THS92030(BaseClient):
         'control': '1001|Pane|Tabpane',
         'class_name': 'CCustomTabCtrl',
         'tabs': [
-            {'name': '股票交易', 'rect': (1, 2, 72, 20), 'link': '129|Tree'},
-            {'name': '开放式基金(场外)', 'rect': (73, 2, 174, 20), 'link': '240|Tree'},
-            {'name': '银河理财', 'rect': (175, 2, 244, 20), 'link': '909|Tree'},
-            {'name': '证券出借', 'rect': (1, 21, 62, 39), 'link': '2037|Tree'},
-            {'name': '账户管理', 'rect': (63, 21, 134, 39), 'link': '830|Tree'},
+            {'name': '股票交易', 'rect': (1, 2, 64, 19), 'link': '129|Tree'},
+            {'name': '开放式基金(场外)', 'rect': (65, 2, 176, 19), 'link': '240|Tree'},
+            {'name': '银河理财', 'rect': (177, 2, 240, 19), 'link': '909|Tree'},
+            {'name': '证券出借', 'rect': (241, 2, 304, 19), 'link': '2037|Tree'},
+            {'name': '港股通', 'rect': (1, 22, 52, 39), 'link': '5199|Tree'},
+            {'name': '账户管理', 'rect': (53, 22, 116, 39), 'link': '830|Tree'},
+            {'name': '柜台市场产品', 'rect': (117, 22, 204, 39), 'link': '5040|Tree'}
         ]
     }
 
     GRID_DEFAULT_ID = {
-        'control': '1047|Pane|JQKGridCSV|1',
-        'headHeight': 20,
-        'lineHeight': 17,
-        'offset': 8,
+        'control': '1047|Pane|GridCSV|1',
+        'headHeight': 24,
+        'lineHeight': 23,
+        'offset': 6,
         'saveto': '|Window|Prompt',
-        'savetofile': '1001|Edit',
-        'verifycode_text': '检测到您正在保存数据，为保护您的账号数据安全，请',
-        'verifycode_id': '2404|Edit|Editor',
-        'verifycodeimage_id': {
-            'control': '2405|Image|Verifycode',
-            'box': (None, None, None, None),
-            'whitelist': '0123456789',
-            'refresh': None
-        }
+        'savetofile': '1152|Edit'
     }
 
 
-class THS92030Engine(BaseEngine):
-    """同花顺验证码登录引擎"""
+class YH55891Engine(BaseEngine):
+    """通用登录器"""
 
-    name = 'THS_9_20_30'
+    name = 'YH_5_58_91'
 
     def __init__(self, client):
-        super(THS92030Engine, self).__init__(client)
+        super(YH55891Engine, self).__init__(client)
 
     def login(self):
         for i in range(5):
@@ -177,20 +167,20 @@ class THS92030Engine(BaseEngine):
             raise LoginError('登录不成功！')  # 登录不成功
 
 
-class THS92030Model(BaseModel):
-    """同花顺的交易模型"""
+class YH55891Model(BaseModel):
+    """银河双子星的交易模型"""
 
-    name = 'THS_9_20_30'
+    name = 'YH_5_58_91'
 
     def __init__(self, client):
-        super(THS92030Model, self).__init__(client)
+        super(YH55891Model, self).__init__(client)
 
     def __product_item_select(self, product, item):
         """同时选择产品和功能"""
         self._get_control(self._client.PRODUCT_MENU_ID).select(product).get_item(item).select()
 
     def __verify_stock_code(self, code):
-        """检查证券代码，此方法没有对证券代码是否存在进行验证"""
+        """检查证券代码"""
         if re.match(r'^\d{6}$', code) is None:
             raise StockCodeError('证券代码必须为6位数字')
 
@@ -199,7 +189,6 @@ class THS92030Model(BaseModel):
     def __verify_stock_price(self, price):
         """
         检查价格是否正确，此方法并没有对价格的最小单位进行限制
-        没有对张跌停价进行验证，没有对价格笼子进行验证
         """
         # 价格为空时，默认当前买入卖出价
         if price is None or price == '':
@@ -214,7 +203,6 @@ class THS92030Model(BaseModel):
     def __verify_stock_count(self, count):
         """
         检查买卖数量是否正确，此方法并没有对数量是否满足手（或张）的倍数进行验证
-        没有对买卖数量是否超出最大限额进行验证，可以自行补充
         """
         if count is None or re.match(r'^[1-9]\d*$', str(count)) is None:
             raise StockCountError('买卖数量必须为规范的数字型或不为0')
@@ -222,14 +210,7 @@ class THS92030Model(BaseModel):
         self._get_control('1034|Edit|Editor').set_text(str(count))
 
     def __verify_stock_trade(self):
-        """
-        验证交易是否正确
-        注意：此方法没有多市场标的的选择功能，没有ST股票的确认功能
-        """
-        pane = self._prompt.tooltip(title='提示信息')
-        if pane is not None:
-            pane.ok()
-
+        """验证交易是否正确"""
         pane = self._prompt.tooltip(title='委托确认')
         if pane is not None:
             pane.ok()
@@ -258,7 +239,7 @@ class THS92030Model(BaseModel):
         return self.__verify_stock_trade()
 
     def initialization(self):
-        """初始化交易窗口，暂不支持精简模式，必须存在此方法"""
+        """初始化交易窗口，暂不支持精简模式"""
         if self._prompt.exists(text='请输入您的交易密码'):
             # 客户端被锁屏
             pane = self._prompt.tooltip(text='请输入您的交易密码')
@@ -273,7 +254,7 @@ class THS92030Model(BaseModel):
         self._prompt.close()
 
     def reset(self):
-        """复位交易窗口的功能，必须存在此方法"""
+        """复位交易窗口的功能"""
         # 复位至股票买入
         # self.__product_item_select(0, ['买入[F1]'])
         pass
@@ -289,11 +270,7 @@ class THS92030Model(BaseModel):
         return self.__trade(code=code, price=price, count=count)  # 买入卖出使用一个下单界面
 
     def cancel(self, **kwargs):
-        """
-        执行撤单操作
-        注意：无法判断委托单是否已选中，可能会造成撤单错误。如果已选中，再select一次会变成未选中，造成撤单错误
-        使用方法参考后面表格控件的items()方法
-        """
+        """执行撤单操作"""
         self.__product_item_select(0, ['撤单[F3]'])
 
         rtn = []
@@ -307,15 +284,14 @@ class THS92030Model(BaseModel):
             # 点击撤单按钮, 不需要等待撤单按钮可用，底层已有等待机制 .wait('enabled')
             self._get_control('1099').click()
             # 弹出确认对话框
-            pane = self._prompt.tooltip(text='撤单确认')  # 设置正确的参数
+            pane = self._prompt.tooltip(text=r'提示信息')  # 设置正确的参数
             if pane is not None:
                 pane.ok()
             # 关闭可能的提示对话框
-            self._prompt.start_monitor(delay=1)
+            self._prompt.start_monitor(delay=1.5)
 
         return rtn
 
     def query(self, target):
-        """查询功能没有日期选择功能，可以自行补充"""
         self.__product_item_select(0, ['查询[F4]', target])
         return self._get_control(self._client.GRID_DEFAULT_ID).refresh()

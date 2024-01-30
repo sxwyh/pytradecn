@@ -251,3 +251,137 @@ class GridWrapper(BaseUIAWrapper):
         # FIXME 等待刷新完成？self是否还有效？
         self.__save_csv_and_parse()
         return self
+
+
+class JQKGridWrapper(BaseUIAWrapper):
+    """为同花顺客户端定制的表格控件，因其保存时会弹出验证码"""
+
+    _control_types = ['JQKGridCSV']
+
+    def __init__(self, elem):
+        super(JQKGridWrapper, self).__init__(elem)
+
+    def __getitem__(self, item):
+        return self.__data[item]
+
+    def __getattribute__(self, attr):
+        return object.__getattribute__(self, attr)
+
+    def __getattr__(self, item):
+        if item in ['count', 'index', 'copy']:
+            return getattr(self.__data, item)
+        else:
+            raise AttributeError(f'THSGridWrapper对象没有{item}属性')
+
+    def __iter__(self):
+        return iter(self.__data)
+
+    def __len__(self):
+        return len(self.__data)
+
+    def __repr__(self):
+        rtn = '['
+        for item in self.__data:
+            rtn += '\n\t' + str(item) + ','
+        return rtn + '\n]'
+
+    def __str__(self):
+        rtn = '['
+        for item in self.__data:
+            rtn += '\n\t' + str(item) + ','
+        return rtn + '\n]'
+
+    def __saveto(self, file):
+        # 关闭可能存在的弹窗
+        self._prompt.close()
+        self.set_focus().type_keys('^s')
+
+        saveto = self._get_control(self.config('saveto'))
+
+        # 捕捉是否有验证码提示框
+        pane = self._prompt.tooltip(text=self.config('verifycode_text'))
+        if pane is not None:
+            # 由于提示框tooltip的捕捉机制以及弹窗的等待关闭机制，故exists()不需要捕捉模式
+            while not saveto.exists():  # 默认非捕捉模式
+                pane.child(self.config('verifycode_id')).set_text(
+                    # 选择是否主动刷新验证码
+                    # pane.child(self.config('verifycodeimage_id').refresh().window_text()
+                    pane.child(self.config('verifycodeimage_id')).window_text()
+                )
+                # 由于点击确认后，验证码提示框并不会主动关闭，故判断“另存为”对话框是否弹出作为验证码是否正确的判断依据
+                pane.ok()
+            else:
+                # 关闭验证码提示框
+                pane.cancel()
+
+        savetofile = saveto.child(self.config('savetofile'))
+        # 将鼠标移动到输入框，否则微软UIA的接口会找不到主窗口，不知何故
+        savetofile.click_input()
+        # 这里感觉“卡”一下，是因为虽然“另存为”对话框已弹出，但弹窗的“等待关闭”机制仍在等待验证码提示框关闭，但验证码提示框不关闭
+        savetofile.set_text(file)
+        # 保存
+        saveto.ok()
+
+    def __save_csv_and_parse(self):
+        """使用另存为方式保存数据"""
+        with NamedTemporaryFile(mode='w+', prefix='WYH_', suffix='.csv', newline='', delete=True) as f:
+            file = f.name
+
+        self.__saveto(file)
+        while not exists(file):  # 等待保存完成
+            pass
+
+        with open(file, newline='') as csvfile:
+            reader = DictReader(csvfile, dialect='excel-tab')  # 同花顺表格采用excel-tab变种
+            self.__data = [GridItem(self, dict(index=reader.line_num-2, **row)) for row in reader]  # row为何是str？
+
+        if exists(file):
+            remove(file)
+
+    def items(self, **kwargs):
+        """
+        依据给定的条件过滤列表，返回过滤后的列表（行，即GridItem对象）
+
+        kwargs关键字可以是表格标头的任何一个字段，value是一个字符串或由字符串组成的元组，
+        即使像成交价格、成交数量等在GridWrapper中仍然以字符串格式保存，这样做的好处是
+        便于使用Decimal类进行浮点数运算，而不会因计算机浮点数危机使价格计算错误。
+
+        items()方法是GridWrapper对象的核心方法，使用场景可能如下：
+
+        1、获得全部委托单
+        grid.items()
+        2、使用一个关键字参数过滤列表
+        grid.items(证券名称='农业银行')  # 所有证券名称为‘农业银行’的委托单
+        3、使用多个关键字参数过滤列表
+        grid.items(证券名称='农业银行', 操作='买入')  # 将农业银行的买入单过滤出来
+        4、使用一个关键字参数，多值过滤列表
+        grid.items(证券名称=('农业银行', '平安银行'))  # 所有证券名称为‘农业银行’和‘平安银行’的委托单
+        grid.items(合同编号=('123456', '654321'))  # 合同编号为‘123456’和‘654321’的委托单
+        5、使用多关键字参数，多值过滤列表
+        grid.items(证券名称=('农业银行', '平安银行'), 操作='买入')  # 农业银行和平安银行的买入单
+        """
+        table = self.__data.copy()
+        for key, value in kwargs.items():
+            values = (str(value),) if isinstance(value, (str, int, float, Decimal)) else value
+            table = [row for row in table if row[key] in values]
+        return table
+
+    def item(self, **kwargs):
+        """依据给定的条件，返回一个匹配的项目"""
+        table = self.items(**kwargs)
+
+        if not table:
+            raise RecordNotFoundError(kwargs)
+
+        if len(table) > 1:
+            exception = RecordAmbiguousError('有{0}条记录, 在此条件下{1}'.format(len(table), str(kwargs),))
+            exception.table = table
+            raise exception
+
+        return table[0]
+
+    def refresh(self):
+        self.type_keys('{F5}')
+        # FIXME 等待刷新完成？self是否还有效？
+        self.__save_csv_and_parse()
+        return self
