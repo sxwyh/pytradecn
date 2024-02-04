@@ -41,7 +41,11 @@ class PromptManagerMeta(type):
 
 
 class PromptManager(metaclass=PromptManagerMeta):
-    """弹出框、提示框管理器"""
+    """
+    弹窗或提示窗管理器，可以对弹窗进行存在性判断、关闭或捕捉提示框。
+    管理弹窗时，不应该将此类实例化，而是使用登录引擎基类或模型基类中提供的_prompt属性。
+    即使您将此类实例化，您实例化的对象也与_prompt属性指向用一个对象（单例模式）。
+    """
 
     def __init__(self, client):
         self.__client = client
