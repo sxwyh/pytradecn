@@ -89,8 +89,18 @@ class THS92030(BaseClient):
     # control_type：     具有此控件类型的窗口
     # auto_id：          具有此自动化ID的窗口
     # control_count:     该窗口在无任何弹窗时的子项数，*必填项*
-    loginwindow = dict(title='', control_type='Pane', control_count=16)
-    mainwindow = dict(title='网上股票交易系统5.0', control_type='Window', control_count=4)
+    loginwindow = {
+        'title': '',
+        'control_type': 'Pane',
+        'predicate_func': lambda ele: ele.rectangle.height() > 35,
+        'control_count': 16
+    }
+    mainwindow = {
+        'title': '网上股票交易系统5.0',
+        'control_type': 'Window',
+        'predicate_func': lambda ele: ele.rectangle.height() > 35,
+        'control_count': 4
+    }
 
     # 登录引擎名，默认DEFAULT VERIFYCODE VERIFYCODEPLUS三种登录引擎无法满足要求时，应自定义登录引擎
     loginengine = 'THS_9_20_30'
