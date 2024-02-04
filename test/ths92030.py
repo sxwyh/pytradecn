@@ -197,7 +197,10 @@ class THS92030Model(BaseModel):
 
     def __product_item_select(self, product, item):
         """同时选择产品和功能"""
-        self._get_control(self._client.PRODUCT_MENU_ID).select(product).get_item(item).select()
+        # 如果希望有产品选择功能
+        # self._get_control(self._client.PRODUCT_MENU_ID).select(product).get_item(item).select()
+        # 如果没有产品菜单
+        self._get_control('129|Tree').get_item(item).select()
 
     def __verify_stock_code(self, code):
         """检查证券代码，此方法没有对证券代码是否存在进行验证"""
