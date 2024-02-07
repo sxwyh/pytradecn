@@ -177,7 +177,10 @@ class YH55891Model(BaseModel):
 
     def __product_item_select(self, product, item):
         """同时选择产品和功能"""
-        self._get_control(self._client.PRODUCT_MENU_ID).select(product).get_item(item).select()
+        # 选择产品
+        # self._get_control(self._client.PRODUCT_MENU_ID).select(product).get_item(item).select()
+        # 不选择产品
+        self._get_control('129|Tree').get_item(item).select()
 
     def __verify_stock_code(self, code):
         """检查证券代码"""
