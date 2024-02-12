@@ -48,7 +48,7 @@ pillow
 下载地址：https://digi.bib.uni-mannheim.de/tesseract/  
 语言包地址：https://github.com/tesseract-ocr/tessdata
 
-> 注意: 不要忘记安装简体中文支持包，pytradecn会自动设别您的安装位置，如果pytradecn无法设别，请使用编辑软件打开pytradecn\utils\ocr.py，修改里面的path参数。
+> 注意: 不要忘记安装简体中文支持包，pytradecn会自动识别您的安装位置，如果pytradecn无法识别，请使用编辑软件打开pytradecn\utils\ocr.py，修改里面的path参数。
 
 ### 使用之前
 使用之前应该尽量净化您的客户端运行环境，以保证您的券商客户端能够稳定运行。应先手动登录您的客户端保证其能正常运行,同花顺的客户端登录后应该关闭它的悬浮窗。
