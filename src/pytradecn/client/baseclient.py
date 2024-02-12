@@ -85,7 +85,7 @@ class BaseClientMeta(type):
             # 最正确的做法是：cls.prompt = PromptManager(cls)，但会造成import冲突，所以在其元类中实现单例
             cls.prompt = None
 
-            # 自动设别客户端
+            # 自动识别客户端
             if 'path' not in attrs or not attrs['path']:
                 cls.path = join(str(get_app_path(attrs['name'])), r'xiadan.exe')
 
