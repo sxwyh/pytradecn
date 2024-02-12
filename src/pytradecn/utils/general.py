@@ -16,10 +16,14 @@
 #
 # 修改日志：
 #   2022-11-17  第一次编写
+#   2024-02-12  添加识别软件安装路径方法
 #
+
+import winreg
 
 from subprocess import run, PIPE, STDOUT
 from time import sleep
+from os.path import dirname
 
 
 def command(cmd: str) -> str:
@@ -40,3 +44,38 @@ def command(cmd: str) -> str:
 
 def wait(s):
     sleep(s)
+
+
+def get_app_path(app):
+    keys = [
+        (winreg.HKEY_CURRENT_USER, r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall'),
+        (winreg.HKEY_LOCAL_MACHINE, r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall'),
+        (winreg.HKEY_LOCAL_MACHINE, r'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall')
+    ]
+
+    for key in keys:
+        # reg_hkey = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, subkey, 0, winreg.KEY_READ)
+        reg_hkey = winreg.OpenKey(*key)
+        for i in range(0, winreg.QueryInfoKey(reg_hkey)[0]):
+            app_hkey = winreg.OpenKey(reg_hkey, winreg.EnumKey(reg_hkey, i))
+            # noinspection PyBroadException
+            try:
+                name = winreg.QueryValueEx(app_hkey, 'DisplayName')[0]
+            except Exception:
+                continue
+
+            if app.lower() in name.lower():
+                # noinspection PyBroadException
+                try:
+                    return winreg.QueryValueEx(app_hkey, 'InstallLocation')[0]
+                except Exception:
+                    pass
+
+                # noinspection PyBroadException
+                try:
+                    uninstall = winreg.QueryValueEx(app_hkey, 'UninstallString')[0]
+                    return dirname(uninstall[uninstall.rindex(':') - 1:])
+                except Exception:
+                    pass
+
+    return None

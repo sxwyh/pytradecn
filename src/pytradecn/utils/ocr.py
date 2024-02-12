@@ -1,6 +1,9 @@
 #
 # OCR（光学字符识别）tesseract 软件支持
 # 官方网站：https://github.com/tesseract-ocr/tesseract
+# 官方文档：https://github.com/tesseract-ocr/tessdoc
+# 语言包：https://github.com/tesseract-ocr/tessdata
+# 下载地址：https://digi.bib.uni-mannheim.de/tesseract/
 # 正确设置tesseract的安装路径，tesseract
 #
 #
@@ -22,6 +25,7 @@
 # 修改日志：
 #   2023-04-12  第一次编写
 #   2023-11-16  添加等待保存完成
+#   2024-02-12  修改路径中带空格问题
 #
 
 from os import remove
@@ -42,7 +46,9 @@ def file_to_text(file='', out='stdout', psm='3', **kwargs):
     #    del kwargs['tessedit_char_whitelist']
 
     # 构造命令行
-    args = f'{path} {file} {out} -l chi_sim+eng --psm {psm} -c'
+    tess_path = '"' + path + '"' if ' ' in path else path
+
+    args = f'{tess_path} {file} {out} -l chi_sim+eng --psm {psm} -c'
     for key in kwargs:
         args = args + f' {key}=' + kwargs[key]
 

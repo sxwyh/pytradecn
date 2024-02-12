@@ -16,15 +16,17 @@
 #
 # 修改日志：
 #   2022-07-15  第一次编写
+#   2024-02-12  添加对客户端的自动设别
 #
 
-from os.path import normpath
+from os.path import normpath, join, exists
 
 from pywinauto import Desktop
 # from pywinauto.win32functions import BringWindowToTop
 from pywinauto.application import Application, ProcessNotFoundError, WindowSpecification
 
 from ..error import ClientConfigError
+from ..utils.general import get_app_path
 
 
 class BaseClientMeta(type):
@@ -83,6 +85,14 @@ class BaseClientMeta(type):
             # 最正确的做法是：cls.prompt = PromptManager(cls)，但会造成import冲突，所以在其元类中实现单例
             cls.prompt = None
 
+            # 自动设别客户端
+            if 'path' not in attrs or not attrs['path']:
+                cls.path = join(str(get_app_path(attrs['name'])), r'xiadan.exe')
+
+            if not exists(cls.path):
+                raise ClientConfigError(f'请正确设置客户端{cls}的<path>参数')
+
+            # 注册客户端
             BaseClientMeta.clients.append(cls)
 
     # def __getattribute__(cls, attr):

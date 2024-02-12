@@ -70,11 +70,14 @@ class YH55891(BaseClient):
     account = {}  # 账户中的其他自定义信息
 
     # 客户端安装位置，大小写敏感，且盘符为大写，如：D:\weituo\银河证券\xiadan.exe
-    path = r'D:\Program Files\weituo\银河证券\xiadan.exe'
+    # 如果path为空，pytradecn将根据客户端信息name的设置自动查找，大部分同花顺下的独立下单程序均能找到
+    # 少数不行，为避免查找时间，建议您正确设置该参数
+    # path = r'D:\Program Files\weituo\银河证券\xiadan.exe'
+    path = ''
 
     # 客户端信息
     version = '5.58.91_0.1'
-    name = '银河双子星'
+    name = '银河证券'
     key = 'yh55891'  # 客户端设别符，重要关键参数，一定保持唯一
 
     # 客户端登录窗口和交易主窗口规范,只要能区别即可，没必要都填写（除control_count外），使用inspect.exe查看，参数如下：

@@ -29,18 +29,25 @@
 #   0.0.3   email.py 中添加login模块级方法
 #           添加极速极慢速模式
 #   0.0.4   去掉模板选择功能，功能的定义和实现均在模型中完成
+#   0.0.5   添加对Tesseract及交易客户端的自动识别
+#
 
 import sys
-from .utils import ocr
+from .utils import general, ocr
 
-__version__ = '0.0.4'
+__version__ = '0.0.5'
 
 # 环境检测
 assert sys.platform.startswith('win'), 'pytradecn只能运行在Windows操作系统'
 assert sys.version_info > (3, 9, 0), 'pytradecn只能运行在python3.9.0以上版本'
 
-assert ocr.exists(ocr.path), '缺少tesseract.exe，下载并拷贝Tesseract文件夹到pytradecn.utils包内或修改ocr.path.' \
-                             '官方网址：https://github.com/tesseract-ocr/tesseract'
+if not ocr.exists(ocr.path):
+    ocr.path = ocr.join(str(general.get_app_path('Tesseract')), r'tesseract.exe')
+    if not ocr.exists(ocr.path):
+        assert False, '找不到tesseract.exe，请安装tesseract-OCR及其简体中文支持包\n' \
+                      '下载地址：https://digi.bib.uni-mannheim.de/tesseract/\n' \
+                      '语言包地址：https://github.com/tesseract-ocr/tessdata\n' \
+                      '如果您已经安装了tesseract-OCR，仍然报此错误，请使用编辑软件打开pytradecn/utils/ocr.py，设置正确的path参数'
 
 try:
     from pywinauto.sysinfo import UIA_support
