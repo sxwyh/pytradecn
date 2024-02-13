@@ -45,20 +45,22 @@ class BaseTemplateMeta(type):
         super(BaseTemplateMeta, cls).__init__(name, bases, attrs)
 
     def __call__(cls, client=None, user=None, psw=None, second=None, **account):
-        client = client or BaseClientMeta.clients[-1]  # if client is None else client
-        client.user = user or client.user  # if user is not None else client.user
-        client.psw = psw or client.psw  # if psw is not None else client.psw
-        client.second = second or client.second  # if second is not None else client.second
+
+        if len(BaseClientMeta.clients) == 0:
+            raise ClientConfigError('找不到客户端，请先使用import导入客户端')
+
+        client = client or BaseClientMeta.clients[-1]
+        client.user = user or client.user
+        client.psw = psw or client.psw
+        client.second = second or client.second
         client.account.update(account)
+
         return super(BaseTemplateMeta, cls).__call__(client)
 
 
 class BaseTemplate(metaclass=BaseTemplateMeta):
     """
-    交易模板的基类，有4个功能在其子类中必须有定义，分别是buy（买入）、sell（卖出）、cancel（撤单）、query（查询），任何在子类中定义
-    的功能都必须添加@BaseTemplate.connect修饰器才能正常工作。在子类中self._client用于访问客户端，self._prompt用于访问弹窗管理
-    器，模板基类是唯一对外接口，外部访问时使用Trader()访问，下面是在您的项目中的访问方法：
-
+    交易模板的基类，模板基类是唯一对外接口，外部访问时使用Trader()访问
     """
 
     def __init__(self, client):
