@@ -23,9 +23,6 @@
     0.0.4版本后只保留基础模板，功能的定义和实现均在模型中完成
 """
 
-# from abc import ABCMeta, abstractmethod
-# from functools import wraps
-
 from pywinauto.timings import Timings
 from pywinauto.application import AppStartError
 
