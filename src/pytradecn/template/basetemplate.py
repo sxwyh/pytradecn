@@ -40,14 +40,9 @@ from ..error import ClientConfigError, TimeoutError
 class BaseTemplateMeta(type):
     """交易模板元类"""
 
-    # templates = {}
-
     def __init__(cls, name, bases, attrs):
 
         super(BaseTemplateMeta, cls).__init__(name, bases, attrs)
-
-        # if name != 'BaseTemplate':
-        #     BaseTemplateMeta.templates[attrs['name']] = cls
 
     def __call__(cls, client=None, user=None, psw=None, second=None, **account):
         client = client or BaseClientMeta.clients[-1]  # if client is None else client
@@ -65,11 +60,6 @@ class BaseTemplate(metaclass=BaseTemplateMeta):
     器，模板基类是唯一对外接口，外部访问时使用Trader()访问，下面是在您的项目中的访问方法：
 
     """
-
-    # name = ''  # 交易模板的名称
-
-    # def __new__(cls, client):
-    #     return object.__new__(BaseTemplateMeta.templates[client.tradetemplate])
 
     def __init__(self, client):
         self._client = client

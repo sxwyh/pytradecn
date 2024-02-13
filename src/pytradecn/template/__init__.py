@@ -29,8 +29,6 @@
 
 from pywinauto.timings import TimeConfig
 
-# from . import templatesa, templatesb  # 注册模板， 0.0.4版本后不需要交易模板
-
 
 def turbo(self):
     """为计时器添加极速模式"""
