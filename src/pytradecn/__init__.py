@@ -29,8 +29,8 @@
 #   0.0.3   email.py 中添加login模块级方法
 #           添加极速极慢速模式
 #   0.0.4   去掉模板选择功能，功能的定义和实现均在模型中完成
-#   0.0.5   添加对Tesseract及交易客户端的自动识别
-#
+#   0.0.5   添加对Tesseract及交易客户端的自动识别，此版本存在BUG
+#   0.0.6   取消内置的客户端
 
 import sys
 from .utils import general, ocr
