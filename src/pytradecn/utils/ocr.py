@@ -4,7 +4,7 @@
 # 官方文档：https://github.com/tesseract-ocr/tessdoc
 # 语言包：https://github.com/tesseract-ocr/tessdata
 # 下载地址：https://digi.bib.uni-mannheim.de/tesseract/
-# 正确设置tesseract的安装路径，tesseract
+# 正确设置tesseract-OCR的安装路径，tesseract
 #
 #
 # 券商客户端自动化测试库
@@ -25,7 +25,7 @@
 # 修改日志：
 #   2023-04-12  第一次编写
 #   2023-11-16  添加等待保存完成
-#   2024-02-12  修改路径中带空格问题
+#   2024-02-12  解决路径中带空格问题
 #
 
 from os import remove
@@ -34,8 +34,9 @@ from tempfile import NamedTemporaryFile
 
 from .general import command
 
-# 正确设置tesseract的安装路径，tesseract
+# 正确设置tesseract-OCR的安装路径，tesseract
 path = join(dirname(__file__), r'Tesseract\tesseract.exe')
+# path = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 
 def file_to_text(file='', out='stdout', psm='3', **kwargs):
@@ -46,9 +47,7 @@ def file_to_text(file='', out='stdout', psm='3', **kwargs):
     #    del kwargs['tessedit_char_whitelist']
 
     # 构造命令行
-    tess_path = '"' + path + '"' if ' ' in path else path
-
-    args = f'{tess_path} {file} {out} -l chi_sim+eng --psm {psm} -c'
+    args = f'"{path}" {file} {out} -l chi_sim+eng --psm {psm} -c'
     for key in kwargs:
         args = args + f' {key}=' + kwargs[key]
 

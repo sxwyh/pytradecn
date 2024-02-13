@@ -17,35 +17,5 @@
 # 修改日志：
 #   2022-07-15  第一次编写
 #
+# 0.0.5 版本后取消内置客户端
 
-from os.path import dirname, join
-from .baseclient import BaseClient
-
-
-class YH(BaseClient):
-    """银河证券客户端"""
-    # 账号信息
-    user = '123456'   # 资金账号，目前只支持资金账号登录
-    psw = '123456'   # 密码
-
-    # 客户端安装位置
-    path = join(dirname(__file__), r'银河证券\xiadan.exe')
-
-    # 客户端信息
-    version = '5.0'
-    name = '银河双子星'
-    key = 'yh'
-
-    # 客户端登录窗口和主窗口规范,只要能区别即可，没必要都填写（除control_count外），使用inspect.exe查看，参数如下：
-    # title：            有这个标题的窗口，inspect.exe下的name属性
-    # title_re：         标题与此正则表达式匹配的窗口
-    # class_name：       具有此窗口类的窗口
-    # class_name_re：    类与此正则表达式匹配的窗口
-    # control_type：     具有此控件类型的窗口
-    # auto_id：          具有此自动化ID的窗口
-    # control_count:     该窗口在无任何弹窗时的子项数，*必填项*
-    loginwindow = dict(title='用户登录', control_count=20)
-    mainwindow = dict(title='网上股票交易系统5.0', control_count=4)
-
-    # 登录引擎名
-    loginengine = 'VERIFYCODEPLUS'

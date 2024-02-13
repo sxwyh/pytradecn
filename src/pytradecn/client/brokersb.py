@@ -18,7 +18,4 @@
 #   2022-07-15  第一次编写
 #
 
-# from os.path import dirname, join
-# from .client import Client
-
-# 将来更多券商客户端
+# 0.0.5版本后取消内置客户端

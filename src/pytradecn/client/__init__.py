@@ -27,13 +27,13 @@
 #   场景，如制作不同的登录引擎以适应不同的登录方式。
 #
 
-from . import brokersa, brokersb  # 导入模块以注册模块中的所有券商客户端
+from .baseclient import BaseClientMeta
 from ..error import ClientConfigError
 
 
 def get_client(process):
 
-    clients = brokersa.YH.clients
+    clients = BaseClientMeta.clients
 
     for client in reversed(clients):
         if client.app.process is not None and client.app.process == process:
