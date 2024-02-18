@@ -116,7 +116,7 @@ class BaseTemplate(metaclass=BaseTemplateMeta):
         try:
             self._client.connect()
         except (AppStartError, TimeoutError):
-            raise ClientConfigError(f'无法启动客户端，可能路径拼写错误：{self._client.path}')
+            raise ClientConfigError(f'无法连接客户端，请正确设置客户端路径（大小写敏感）：{self._client.path}')
 
     def __unlock(self):
         """软件的自动化依赖电脑在登录的情况下"""

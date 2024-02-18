@@ -35,7 +35,7 @@
 import sys
 from .utils import general, ocr
 
-__version__ = '0.0.6'
+__version__ = '0.0.7'
 
 # 环境检测
 assert sys.platform.startswith('win'), 'pytradecn只能运行在Windows操作系统'

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pytradecn"
-version = "0.0.6"
+version = "0.0.7"
 description = "a securities client automated trading model based on customized factory pattern design"
 keywords = ["automated", "trade", "broker", "china", "中国", "券商客户端", "自动化交易", "银河证券"]
 

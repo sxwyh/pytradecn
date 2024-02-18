@@ -30,10 +30,12 @@
 from .baseclient import BaseClientMeta
 from ..error import ClientConfigError
 
+from . import brokera, brokerb  # 注册内置客户端
+
 
 def get_client(process):
 
-    clients = BaseClientMeta.clients
+    clients = BaseClientMeta.clients.copy()
 
     for client in reversed(clients):
         if client.app.process is not None and client.app.process == process:
