@@ -1,5 +1,5 @@
 #
-# 券商客户端自动化测试库
+# 市场数据采集库
 # Copyright (C) 2023 谁的谁（41715399@qq.com） All rights reserved.
 #
 # 模块功能：工具库
@@ -17,6 +17,7 @@
 # 修改日志：
 #   2022-11-17  第一次编写
 #   2024-02-12  添加识别软件安装路径方法
+#   2024-02-23  规范软件安装路径与资源管理器一致
 #
 
 import winreg
@@ -24,6 +25,7 @@ import winreg
 from subprocess import run, PIPE, STDOUT
 from time import sleep
 from os.path import dirname
+from pathlib import Path
 
 
 def command(cmd: str) -> str:
@@ -67,14 +69,14 @@ def get_app_path(app):
             if app.lower() in name.lower():
                 # noinspection PyBroadException
                 try:
-                    return winreg.QueryValueEx(app_hkey, 'InstallLocation')[0]
+                    return str(Path(winreg.QueryValueEx(app_hkey, 'InstallLocation')[0]).resolve())
                 except Exception:
                     pass
 
                 # noinspection PyBroadException
                 try:
                     uninstall = winreg.QueryValueEx(app_hkey, 'UninstallString')[0]
-                    return dirname(uninstall[uninstall.rindex(':') - 1:])
+                    return str(Path(dirname(uninstall[uninstall.rindex(':') - 1:])).resolve())
                 except Exception:
                     pass
 
