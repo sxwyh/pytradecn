@@ -17,6 +17,7 @@
 # 修改日志：
 #   2022-07-15  第一次编写
 #   2024-02-12  添加对客户端的自动设别
+#   2024-02-23  登录窗口和主窗口visible_only设置为False
 #
 
 from os.path import normpath, join
@@ -51,6 +52,7 @@ class BaseClientMeta(type):
                 # 对第0个元素完成处理，第0个元素是软件的界面，此时默认top_level_only=True，意味着只查找桌面的子项
                 criterias[0]['app'] = cls.app
                 criterias[0]['backend'] = 'uia'
+                criterias[0]['visible_only'] = False
                 # 不需要对1以后的元素添加top_level_only、backend、parent等属性，因为pywinauto内部可以自动处理
                 # 最后一个元素是真正的窗口，必须有control_count属性
                 control_count = criterias[-1].pop('control_count', 20)
@@ -71,6 +73,7 @@ class BaseClientMeta(type):
                 # 对第0个元素完成处理，第0个元素是软件的界面，此时默认top_level_only=True，意味着只查找桌面的子项
                 criterias[0]['app'] = cls.app
                 criterias[0]['backend'] = 'uia'
+                criterias[0]['visible_only'] = False
                 # 不需要对1以后的元素添加top_level_only、backend、parent等属性，因为pywinauto内部可以自动处理
                 # 最后一个元素是真正的窗口，必须有control_count属性
                 control_count = criterias[-1].pop('control_count', 4)
