@@ -52,7 +52,7 @@
 
 import re
 
-from pytradecn import BaseClient, BaseEngine, BaseModel
+from pytradecn import Trader, BaseClient, BaseEngine, BaseModel
 
 from pytradecn.logger import logger
 from pytradecn.error import StockCodeError, StockPriceError, StockCountError, TradeFailFError
@@ -301,3 +301,6 @@ class YH55891Model(BaseModel):
     def query(self, target):
         self.__product_item_select(0, ['查询[F4]', target])
         return self._get_control(self._client.GRID_DEFAULT_ID).refresh()
+
+
+YHZJ = Trader(YH55891)

@@ -56,7 +56,7 @@
 
 import re
 
-from pytradecn import BaseClient, BaseEngine, BaseModel
+from pytradecn import Trader, BaseClient, BaseEngine, BaseModel
 
 from pytradecn.logger import logger
 from pytradecn.error import StockCodeError, StockPriceError, StockCountError, TradeFailFError
@@ -335,3 +335,6 @@ class THS92030Model(BaseModel):
         """查询功能没有日期选择功能，可以自行补充"""
         self.__product_item_select(0, ['查询[F4]', target])
         return self._get_control(self._client.GRID_DEFAULT_ID).refresh()
+
+
+THS = Trader(THS92030)
