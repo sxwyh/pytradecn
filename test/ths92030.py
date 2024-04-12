@@ -95,13 +95,13 @@ class THS92030(BaseClient):
     loginwindow = {
         'title': '',
         'control_type': 'Pane',
-        'predicate_func': lambda ele: ele.rectangle.height() > 35,
+        'predicate_func': lambda ele: ele.rectangle.height() > 50,
         'control_count': 16
     }
     mainwindow = {
         'title': '网上股票交易系统5.0',
         'control_type': 'Window',
-        'predicate_func': lambda ele: ele.rectangle.height() > 35,
+        'predicate_func': lambda ele: ele.rectangle.height() > 50,
         'control_count': 4
     }
 
