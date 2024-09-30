@@ -78,7 +78,6 @@ class YH55891(BaseClient):
     # 客户端信息
     version = '5.58.91_0.1'
     name = '银河证券'
-    key = 'yh55891'  # 客户端设别符，重要关键参数，一定保持唯一
 
     # 客户端登录窗口和交易主窗口规范,只要能区别即可，没必要都填写（除control_count外），使用inspect.exe查看，参数如下：
     # title：            有这个标题的窗口，inspect.exe下的name属性
@@ -303,4 +302,5 @@ class YH55891Model(BaseModel):
         return self._get_control(self._client.GRID_DEFAULT_ID).refresh()
 
 
+# 定义一个交易对象
 YHZJ = Trader(YH55891)

@@ -16,11 +16,14 @@
 #
 # 修改日志：
 #   2023-09-28  第一次编写
+#   2024-08-08  解决有些客户端handle为None的问题
+#   2024-08-28  控件存在性判断采用更通用的办法
 #
 
 from ..client import get_client
 from ..utils.ocr import image_to_string
 from ..uiacontrol import UIAWrapper, win32structure, get_control_specification
+from ..uiacontrol import wait_until, Timings, TimeoutError
 
 
 class BaseUIAWrapper(UIAWrapper):
@@ -34,10 +37,12 @@ class BaseUIAWrapper(UIAWrapper):
         self._win32structure = win32structure
 
     def _get_control(self, control_define):
+        """始终获取主窗口下的控件"""
+        # NOTE 弹窗控件有可能出现在同级或上一层，获取弹窗内的控件应使用child()
         # control_define 为Client格式的字符串或字典，或者pywinauto格式的字典
         return get_control_specification(self._client.window(), control_define)
 
-    def config(self, key):  # 弹出框无法使用
+    def config(self, key):
         return self.element_info.config.get(key, None)
 
     def top_level_parent(self):
@@ -48,10 +53,15 @@ class BaseUIAWrapper(UIAWrapper):
     def standard(self):
         """返回此控件的pywinauto官方标准控件"""
         # NOTE 不要在条件中添加type和class，有可能失效
-        return get_control_specification(self.element_info.parent, {'handle': self.element_info.handle})
+        if self.element_info.handle is not None:
+            return get_control_specification(self.element_info.parent, {'handle': self.element_info.handle})
+        else:
+            self.element_info.control_key = None
+            return UIAWrapper(self.element_info)
 
-    def own(self):  # 弹出框无法使用
+    def own(self):
         """返回此控件的另一个副本"""
+        # NOTE 当控件不存在时，如果control_define中没有唯一性参数时，可能会返回其他控件
         return get_control_specification(self.element_info.current_parent, self.element_info.control_define)
 
     def child(self, control_define):
@@ -72,7 +82,19 @@ class BaseUIAWrapper(UIAWrapper):
 
     def exists(self, timeout=None):
         """判断控件是否还存在"""
-        return self._get_control({'handle': self.handle}).exists(timeout=timeout)
+        # 方法一
+        # self.own().exists(timeout=timeout)
+
+        # 方法二
+        if timeout is None:
+            timeout = 0  # Timings.exists_timeout
+        retry_interval = Timings.exists_retry
+
+        try:
+            wait_until(timeout, retry_interval, lambda: bool(self.element_info.process_id), True)
+            return True
+        except TimeoutError:
+            return False
 
 
 Wrapper = BaseUIAWrapper

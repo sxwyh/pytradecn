@@ -16,6 +16,7 @@
 #
 # 修改日志：
 #   2022-07-20  第一次编写
+#   2024-08-09  解决有些客户端弹窗控件handle为None时的问题
 #
 
 from os import remove
@@ -24,7 +25,7 @@ from decimal import Decimal
 from tempfile import NamedTemporaryFile
 from os.path import exists
 
-from .baseuiawrapper import BaseUIAWrapper
+from .baseuiawrapper import BaseUIAWrapper, wait_until, Timings
 from ..error import RecordNotFoundError, RecordAmbiguousError, ItemKeyError, TimeoutError
 
 
@@ -37,8 +38,8 @@ class PromptWrapper(BaseUIAWrapper):
 
     def __wait_prompt_close(self):
         try:
-            # NOTE 使用_get_control从顶层窗口查找
-            self._get_control({'handle': self.handle}).wait_not('exists')
+            timeout = Timings.window_find_timeout
+            wait_until(timeout, Timings.window_find_retry, lambda: bool(self.element_info.process_id), False)
         except TimeoutError:
             # 超时因存在关闭确认框或其他已知的原因
             pass

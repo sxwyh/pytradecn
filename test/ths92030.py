@@ -64,7 +64,7 @@ from pytradecn.error import LoginError, TimeoutError
 
 
 class THS92030(BaseClient):
-    """同花顺客户端9.20.30，由于其内嵌在同花顺行情软件中，最好手动启动并登录同花顺行情软件并从行情软件打开客户端"""
+    """同花顺客户端9.20.30"""
 
     # 以下为固定参数，不跟随交易模板、登录引擎、交易模型的改变而不同
     # 账号信息
@@ -82,7 +82,6 @@ class THS92030(BaseClient):
     # 客户端信息
     version = '9.20.30'
     name = '同花顺'
-    key = 'ths92030'  # 客户端设别符，重要关键参数，一定保持唯一
 
     # 客户端登录窗口和交易主窗口规范,只要能区别即可，没必要都填写（除control_count外），使用inspect.exe查看，参数如下：
     # title：            有这个标题的窗口，inspect.exe下的name属性
@@ -337,4 +336,5 @@ class THS92030Model(BaseModel):
         return self._get_control(self._client.GRID_DEFAULT_ID).refresh()
 
 
+# 定义一个交易对象
 THS = Trader(THS92030)

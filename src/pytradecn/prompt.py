@@ -16,6 +16,8 @@
 #
 # 修改日志：
 #   2022-12-01  第一次编写
+#   2024-08-09  添加自定义属性，与uiacontrol.py保持一致
+#   2024-08-28  解决有些客户端弹窗与主窗口处于同一级的问题
 #
 
 import re
@@ -56,14 +58,39 @@ class PromptManager(metaclass=PromptManagerMeta):
         """获得所有弹窗"""
         window = self.__client.window()
         child_count = window.child_count  # 似乎以计数的方法更为可靠
+        prompt_level = window.prompt_level
 
-        elements = window.element_info.children()[:-child_count]  # 需要返回元素，而非包装器
+        # 获得弹窗的父项，有一些弹窗与窗口处于同一级别
+        parent = window.element_info  # 需要返回元素，而非包装器
+        while prompt_level < 0:
+            parent = parent.parent
+            prompt_level = prompt_level + 1
+
+        # 获取所有弹窗
+        elements = parent.children(process=self.__client.app.process)[:-child_count]
+
+        if elements:
+            elements = [elem for elem in elements if elem.process_id == self.__client.app.process]
 
         if elements:
             elements = [elem for elem in elements if elem.control_type in self.__client.PROMPT_TYPE_LIST]
 
         if elements:
             elements = [elem for elem in elements if len(elem.children(process=elem.process_id)) > 0]
+
+        # 与uiacontrol.py保持一致
+        for elem in elements:
+            elem.control_key = 'Prompt'  # 与 PromptWrapper类中的_control_types属性一致
+            elem.control_define = {
+                'class_name': elem.class_name,
+                'title': elem.rich_text,
+                'handle': elem.handle,
+                'control_type': elem.control_type,
+                'auto_id': elem.automation_id,
+                'process': elem.process_id
+            }
+            elem.current_parent = elem.parent
+            elem.config = {}
 
         # 返回弹窗包装器
         return [PromptWrapper(ele) for ele in elements]

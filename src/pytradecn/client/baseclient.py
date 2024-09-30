@@ -18,16 +18,19 @@
 #   2022-07-15  第一次编写
 #   2024-02-12  添加对客户端的自动设别
 #   2024-02-23  登录窗口和主窗口visible_only设置为False
+#   2024-08-28  为窗口添加prompt_level参数，解决有些客户端弹窗与主窗口处于同一级的问题
+#               增强path参数的自动识别
+#               key参数自动化
 #
 
-from os.path import normpath, join
+from os.path import normpath, exists
 
 from pywinauto import Desktop
 # from pywinauto.win32functions import BringWindowToTop
 from pywinauto.application import Application, ProcessNotFoundError, WindowSpecification
 
 from ..error import ClientConfigError
-from ..utils.general import get_app_path
+from ..utils.general import get_app_exes, random_string
 
 
 class BaseClientMeta(type):
@@ -56,11 +59,13 @@ class BaseClientMeta(type):
                 # 不需要对1以后的元素添加top_level_only、backend、parent等属性，因为pywinauto内部可以自动处理
                 # 最后一个元素是真正的窗口，必须有control_count属性
                 control_count = criterias[-1].pop('control_count', 20)
+                prompt_level = criterias[-1].pop('prompt_level', 0)
                 # 构造真正的WindowSpecification对象
                 cls.loginwindow = WindowSpecification(criterias[0])
                 cls.loginwindow.criteria.extend(criterias[1:])
-                # 添加自定义child_count属性，以识别弹窗
+                # 添加自定义child_count和prompt_level属性，以识别弹窗
                 cls.loginwindow.child_count = control_count
+                cls.loginwindow.prompt_level = prompt_level
             else:
                 raise ClientConfigError(f'客户端{cls}缺少关键配置<loginwindow>')
 
@@ -77,11 +82,13 @@ class BaseClientMeta(type):
                 # 不需要对1以后的元素添加top_level_only、backend、parent等属性，因为pywinauto内部可以自动处理
                 # 最后一个元素是真正的窗口，必须有control_count属性
                 control_count = criterias[-1].pop('control_count', 4)
+                prompt_level = criterias[-1].pop('prompt_level', 0)
                 # 构造真正的WindowSpecification对象
                 cls.mainwindow = WindowSpecification(criterias[0])
                 cls.mainwindow.criteria.extend(criterias[1:])
-                # 添加自定义child_count属性，以识别弹窗
+                # 添加自定义child_count和prompt_level属性，以识别弹窗
                 cls.mainwindow.child_count = control_count
+                cls.mainwindow.prompt_level = prompt_level
             else:
                 raise ClientConfigError(f'客户端{cls}缺少关键配置<mainwindow>')
 
@@ -90,10 +97,17 @@ class BaseClientMeta(type):
 
             # 自动识别客户端
             if 'path' not in attrs or not attrs['path']:
-                cls.path = join(str(get_app_path(attrs['name'])), r'xiadan.exe')
+                stems = ['xiadan', 'tdxw', 'winwt', 'tc', 'sxiadan', 'trading', 'ehtrade']
+                files = [str(p) for p in get_app_exes(attrs['name']) if p.stem.lower() in stems]
+                cls.path = files[-1] if files else ''
 
-            # if not exists(cls.path):
-            #     raise ClientConfigError(f'请正确设置客户端{cls}的<path>参数')
+            # if not cls.path or not exists(cls.path):
+            if not (cls.path and exists(cls.path)):
+                raise ClientConfigError(f'请正确设置客户端{cls}的path参数:{cls.path}')
+
+            # 自动设置key值
+            if 'key' not in attrs or not attrs['key']:
+                cls.key = name + '_' + random_string()
 
             # 注册客户端
             BaseClientMeta.clients.append(cls)
@@ -134,7 +148,6 @@ class BaseClient(metaclass=BaseClientMeta):
     # 客户端信息
     version = None
     name = None
-    key = None  # 客户端设别符，重要关键参数，一定保持唯一
 
     # 客户端登录窗口和主窗口规范，重要参数，在具体的客户端设置
     # loginwindow = dict()
@@ -150,6 +163,7 @@ class BaseClient(metaclass=BaseClientMeta):
     # 全局设置或控件参数
     # 设置交易的速度模式，注意：会影响同时操作的所有客户端
     TRADE_SPEED_MODE = 'fast'  # turbo（极速）、fast（快速）、defaults(默认)、slow（慢速）、dull（极慢）
+
     # 提示框弹出框相关
     PROMPT_TYPE_LIST = ('Pane', 'Window', 'Custom')
     PROMPT_TITLE_ID = '1365'
@@ -164,7 +178,7 @@ class BaseClient(metaclass=BaseClientMeta):
     # auto_id，control_type，find_index应至少存在一个，应保证找到唯一控件
     # 该控件如有其他参数，采用字典形式传入
 
-    # 控件参数和设置参数跟随交易模板、登录引擎、交易模型的不同而不同
+    # 控件参数和设置参数跟随登录引擎、交易模型的不同而不同
     # 登录引擎DEFAULT、VERIFYCODE、VERIFYCODEPLUS所需要的控件规范和设置参数
     # 登录相关控件
     LOGIN_USER_ID = '1001|Edit|Editor'

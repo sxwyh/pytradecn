@@ -16,6 +16,7 @@
 #
 # 修改日志：
 #   2023-08-05  第一次编写
+#   2024-08-28  添加process参数，解决有些弹窗或控件从桌面查找
 #
 
 import re
@@ -35,6 +36,7 @@ win32structure = win32structures
 def find_elements(class_name=None,
                   class_name_re=None,
                   parent=None,
+                  process=None,
                   title=None,
                   title_re=None,
                   visible_only=True,
@@ -53,17 +55,20 @@ def find_elements(class_name=None,
                   # 自定义参数
                   control_key=None,
                   control_define=None,
-                  top_parent=None,
                   **config
                   ):
     """查找元素"""
     elements = parent.descendants(class_name=class_name,
                                   control_type=control_type,
+                                  process=process,
                                   cache_enable=True,
                                   depth=depth
                                   )
 
     # 按顺序过滤，最大可能减少循环次数
+    if process is not None and elements:  # 此应用场景要求先过滤出应用软件
+        elements = [elem for elem in elements if elem.process_id == process]
+
     if ctrl_index is not None:
         elements = elements[ctrl_index:ctrl_index+1] if len(elements) > ctrl_index else []
 
@@ -94,8 +99,8 @@ def find_elements(class_name=None,
 
         elements = [elem for elem in elements if _title_match(elem)]
 
-    # if class_name is not None and elements:
-    #     elements = [elem for elem in elements if elem.class_name == class_name]
+    if class_name is not None and elements:
+        elements = [elem for elem in elements if elem.class_name == class_name]
 
     if class_name_re is not None and elements:
         class_name_regex = re.compile(class_name_re)
@@ -119,7 +124,6 @@ def find_elements(class_name=None,
     for ele in elements:
         ele.control_key = control_key or ele.control_type  # control_key if control_key isnot None else ele.control_type
         ele.control_define = control_define
-        ele.top_parent = top_parent
         ele.current_parent = parent
         ele.config = config
 
@@ -321,19 +325,12 @@ def criteria_parser(control_define: (str, dict)) -> dict:
     return criteria
 
 
-def get_control_specification(parent, control_define, top_parent=None):
+def get_control_specification(parent, control_define):
     # 必须包含parent参数
     if isinstance(parent, (WindowSpecification, UIAControlSpecification, UIAWrapper)):
         parent = parent.element_info
 
-    if top_parent is not None:
-        if isinstance(top_parent, (WindowSpecification, UIAControlSpecification, UIAWrapper)):
-            top_parent = top_parent.element_info
-    else:
-        top_parent = parent
-
     criteria = criteria_parser(control_define)
     criteria['parent'] = parent
-    criteria['top_parent'] = top_parent
 
     return UIAControlSpecification(criteria)

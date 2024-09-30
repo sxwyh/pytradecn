@@ -34,11 +34,16 @@
 #   0.0.7   解决OCR路径中的空格问题
 #   0.0.8   软件安装路径的标准化（资源管理器标准）
 #           登录窗口和主窗口visible_only设置为False
+#   0.0.9   解决部分客户端控件无handle的问题
+#           客户端设置中key参数自动化
+#           增强客户端path参数的自动识别
+#           为窗口添加prompt_level参数，解决有些客户端弹窗与主窗口处于同一级的问题
+#
 
 import sys
 from .utils import general, ocr
 
-__version__ = '0.0.8'
+__version__ = '0.0.9'
 
 # 环境检测
 assert sys.platform.startswith('win'), 'pytradecn只能运行在Windows操作系统'

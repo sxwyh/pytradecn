@@ -21,6 +21,7 @@
 #
 
 import winreg
+import random
 
 from subprocess import run, PIPE, STDOUT
 from time import sleep
@@ -69,15 +70,25 @@ def get_app_path(app):
             if app.lower() in name.lower():
                 # noinspection PyBroadException
                 try:
-                    return str(Path(winreg.QueryValueEx(app_hkey, 'InstallLocation')[0]).resolve())
+                    return Path(winreg.QueryValueEx(app_hkey, 'InstallLocation')[0]).resolve()
                 except Exception:
                     pass
 
                 # noinspection PyBroadException
                 try:
                     uninstall = winreg.QueryValueEx(app_hkey, 'UninstallString')[0]
-                    return str(Path(dirname(uninstall[uninstall.rindex(':') - 1:])).resolve())
+                    return Path(dirname(uninstall[uninstall.rindex(':') - 1:])).resolve()
                 except Exception:
                     pass
 
     return None
+
+
+def get_app_exes(app):
+    app_path = get_app_path(app)
+    return [] if app_path is None else app_path.glob('*.exe')
+
+
+def random_string(length=6):
+    base_str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    return ''.join(random.sample(base_str, length))
